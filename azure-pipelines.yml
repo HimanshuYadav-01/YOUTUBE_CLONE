@@ -8,21 +8,19 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: NodeTool@0
+    - task: Npm@1
       inputs:
-        versionSpec: '22.x'
-      displayName: 'Install Node.js 22 LTS'
-
-    - script: |
-        npm install
-        npm run build
-      displayName: 'Install dependencies and build project'
+        command: 'install'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'build'               # Your React/Node build output folder
-        ArtifactName: 'drop'                 
-        publishLocation: 'Container'         
+        PathtoPublish: 'build'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
 
 - stage: Deploy 
   jobs:
@@ -40,8 +38,8 @@ stages:
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
-        azureSubscription: 'AzureForStudents-YoutubeClone' # <-- CHANGE this to your actual service connection name
+        azureSubscription: 'AzureForStudents-YoutubeClone'  # <-- Correct service connection name
         appType: 'webAppLinux'
-        WebAppName: 'YoutubeProj'                          # <-- Your exact App Service name
+        WebAppName: 'YoutubeProj'  # <-- Your exact App Service name
         packageForLinux: '$(System.ArtifactsDirectory)/drop'
-        RuntimeStack: 'NODE|22-lts'
+        RuntimeStack: 'NODE|22-lts'  # <-- Correct runtime stack
