@@ -1,0 +1,47 @@
+trigger:
+- main
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '22.x'
+      displayName: 'Install Node.js 22 LTS'
+
+    - script: |
+        npm install
+        npm run build
+      displayName: 'Install dependencies and build project'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'build'               # Your React/Node build output folder
+        ArtifactName: 'drop'                 
+        publishLocation: 'Container'         
+
+- stage: Deploy 
+  jobs:
+  - job: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'AzureForStudents-YoutubeClone' # <-- CHANGE this to your actual service connection name
+        appType: 'webAppLinux'
+        WebAppName: 'YoutubeProj'                          # <-- Your exact App Service name
+        packageForLinux: '$(System.ArtifactsDirectory)/drop'
+        RuntimeStack: 'NODE|22-lts'
