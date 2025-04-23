@@ -11,14 +11,21 @@ stages:
     - task: Npm@1
       inputs:
         command: 'install'
+    
     - task: Npm@1
       inputs:
         command: 'custom'
         customCommand: 'run build'
 
+    # Optional: Debug the contents of build directory
+    - script: |
+        echo "Build directory contents:"
+        ls -la build
+      displayName: 'Debug: List build directory'
+
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'build'
+        PathtoPublish: 'build'          # Publishes only the build folder
         ArtifactName: 'drop'
         publishLocation: 'Container'
 
@@ -38,8 +45,8 @@ stages:
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure for Students (cad91fef-fc90-457e-89b1-7221750f7c9e)'  # <-- Correct service connection name
+        azureSubscription: 'Azure for Students (cad91fef-fc90-457e-89b1-7221750f7c9e)'  # ✅ Use your exact service connection name
         appType: 'webAppLinux'
-        WebAppName: 'CIpractice'  # <-- Your exact App Service name
-        packageForLinux: '$(System.ArtifactsDirectory)/drop/build'
-        RuntimeStack: 'NODE|22-lts'  # <-- Correct runtime stack
+        WebAppName: 'CIpractice'  # ✅ Your actual Azure App Service name
+        packageForLinux: '$(System.ArtifactsDirectory)/drop'  # ✅ Path now points directly to the build content
+        RuntimeStack: 'NODE|22-lts'
