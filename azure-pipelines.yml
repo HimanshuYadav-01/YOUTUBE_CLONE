@@ -42,6 +42,12 @@ stages:
         artifactName: 'drop'
         downloadPath: '$(System.ArtifactsDirectory)'
 
+    # ✅ Debug step added to inspect downloaded artifact contents
+    - script: |
+        echo "DEBUG: Contents of drop folder after artifact download:"
+        ls -la $(System.ArtifactsDirectory)/drop
+      displayName: 'Debug: List drop folder after download'
+
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
