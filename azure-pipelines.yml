@@ -40,6 +40,6 @@ stages:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Azure for Students (cad91fef-fc90-457e-89b1-7221750f7c9e)'  # <-- Correct service connection name
         appType: 'webAppLinux'
-        WebAppName: 'YoutubeProj'  # <-- Your exact App Service name
+        WebAppName: 'CIpractice'  # <-- Your exact App Service name
         packageForLinux: '$(System.ArtifactsDirectory)/drop'
         RuntimeStack: 'NODE|22-lts'  # <-- Correct runtime stack
