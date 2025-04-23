@@ -38,7 +38,7 @@ stages:
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure for Students'  # <-- Correct service connection name
+        azureSubscription: 'Azure for Students (cad91fef-fc90-457e-89b1-7221750f7c9e)'  # <-- Correct service connection name
         appType: 'webAppLinux'
         WebAppName: 'YoutubeProj'  # <-- Your exact App Service name
         packageForLinux: '$(System.ArtifactsDirectory)/drop'
