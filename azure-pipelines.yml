@@ -1,7 +1,3 @@
-trigger:
-- main
-
-stages:
 - stage: Build
   jobs:
   - job: Build
@@ -11,15 +7,13 @@ stages:
     - task: Npm@1
       inputs:
         command: 'install'
-    
-    - task: Npm@1
-      inputs:
-        command: 'custom'
-        customCommand: 'run build'
-        env:
-          CI: 'false'   # ✅ This disables "treat warnings as errors"
 
-    # Optional: Debug the contents of build directory
+    - script: |
+        npm run build
+      displayName: 'Run React Build with CI=false'
+      env:
+        CI: 'false'
+
     - script: |
         echo "Build directory contents:"
         ls -la build
@@ -27,34 +21,6 @@ stages:
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: 'build'          # Publishes only the build folder
+        PathtoPublish: 'build'
         ArtifactName: 'drop'
         publishLocation: 'Container'
-
-- stage: Deploy 
-  jobs:
-  - job: Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: DownloadBuildArtifacts@1
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'drop'
-        downloadPath: '$(System.ArtifactsDirectory)'
-
-    # ✅ Debug step added to inspect downloaded artifact contents
-    - script: |
-        echo "DEBUG: Contents of drop folder after artifact download:"
-        ls -la $(System.ArtifactsDirectory)/drop
-      displayName: 'Debug: List drop folder after download'
-
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure for Students (cad91fef-fc90-457e-89b1-7221750f7c9e)'  # ✅ Use your exact service connection name
-        appType: 'webAppLinux'
-        WebAppName: 'CIpractice'  # ✅ Your actual Azure App Service name
-        packageForLinux: '$(System.ArtifactsDirectory)/drop'  # ✅ Path now points directly to the build content
-        RuntimeStack: 'NODE|22-lts'
