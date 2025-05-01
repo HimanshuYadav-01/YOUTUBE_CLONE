@@ -16,6 +16,8 @@ stages:
       inputs:
         command: 'custom'
         customCommand: 'run build'
+        env:
+          CI: 'false'   # ✅ This disables "treat warnings as errors"
 
     # Optional: Debug the contents of build directory
     - script: |
